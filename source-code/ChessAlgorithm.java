@@ -3,7 +3,8 @@ import java.util.ArrayList;
 public class ChessAlgorithm {
 
     RuleBook ruleBook = new RuleBook();
-    //StaticValue staticValue = new StaticValue();
+    StaticValue staticValue = new StaticValue();
+    MoveGenerator moveGenerator = new MoveGenerator();
 
     public int curXPos = 100;
     public int curYPos = 100;
@@ -86,6 +87,20 @@ public class ChessAlgorithm {
 
     }
 
+    public void getAIMove() {
+
+        board[oldXPos][oldYPos].setSelected(false);
+        ruleBook.findMoves(100, 100, isWhiteTurn);
+        unhighlightSquares();
+        moveGenerator.selectRandomPiece(board);
+        oldYPos = moveGenerator.getOldYPos();
+        oldXPos = moveGenerator.getOldXPos();
+        curYPos = moveGenerator.getCurYPos();
+        curXPos = moveGenerator.getCurXPos();
+        movePiece(0);
+
+    }
+
     public void selectSquare() {
 
         int white = 0;
@@ -109,9 +124,11 @@ public class ChessAlgorithm {
             oldYPos = curYPos;
         } else if (board[curXPos][curYPos].getHighlighted() && board[curXPos][curYPos].getPiece() == 0) {
             movePiece(white);
+            getAIMove();
         } else if (board[curXPos][curYPos].getHighlighted() && board[curXPos][curYPos].getIsWhite() != white && board[curXPos][curYPos].getPiece() > 0) {
-            movePiece(white);
             takePiece();
+            movePiece(white);
+            getAIMove();
         }
 
     }
@@ -144,8 +161,8 @@ public class ChessAlgorithm {
         kingChecked = false;
         checkChecker(colour);
 
-        //staticValue.computeStaticValue(colour);
-        //System.out.println("static value: " + staticValue.getStaticValue());
+        staticValue.computeStaticValue(colour, board);
+        System.out.println("static value: " + staticValue.getStaticValue());
 
         isWhiteTurn = colour != 1;
         turnsTaken++;
@@ -197,10 +214,7 @@ public class ChessAlgorithm {
         }
         if (board[curXPos][curYPos].getPiece() == 6) {
 
-            int y = 0;
-            if (isWhiteTurn) {
-                y = 7;
-            }
+            int y = (isWhiteTurn) ? 7 : 0;
 
             if (oldXPos - curXPos == 2) { // if left castle
                 board[0][y].setPiece(0);
@@ -489,7 +503,6 @@ public class ChessAlgorithm {
     }
 
     public void setCurYPos(int curYPos) {this.curYPos = curYPos;}
-
     public void setCurXPos(int curXPos) {this.curXPos = curXPos;}
 
     public static Square[][] getBoard() {return board;}

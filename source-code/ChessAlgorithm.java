@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-
 public class ChessAlgorithm {
 
     RuleBook ruleBook = new RuleBook();
@@ -67,29 +65,14 @@ public class ChessAlgorithm {
         board[oldXPos][oldYPos].setSelected(false);
         unhighlightSquares();
 
-        moveGenerator.selectRandomPiece(board);
-        ArrayList<Integer> randomPiece = moveGenerator.getRandomPiece();
+        moveGenerator.selectRandomPiece(ruleBook, board);
 
-        ruleBook.setBoard(board);
-        ruleBook.findMoves(randomPiece.get(0), randomPiece.get(1), isWhiteTurn);
-        ArrayList<Integer> highlights = highlightSquares(randomPiece.get(0), randomPiece.get(1));
+        oldXPos = moveGenerator.getOldXPos();
+        oldYPos = moveGenerator.getOldYPos();
+        curXPos = moveGenerator.getCurXPos();
+        curYPos = moveGenerator.getCurYPos();
 
-        if (highlights.size() > 0) {
-
-            moveGenerator.selectRandomMove(highlights);
-
-            oldXPos = randomPiece.get(0);
-            oldYPos = randomPiece.get(1);
-            curXPos = moveGenerator.getCurXPos();
-            curYPos = moveGenerator.getCurYPos();
-
-            movePiece();
-
-        } else {
-
-            getAIMove();
-
-        }
+        movePiece();
 
         isWhiteTurn = true;
 
@@ -113,7 +96,7 @@ public class ChessAlgorithm {
 
             ruleBook.setBoard(board);
             ruleBook.findMoves(curXPos, curYPos, isWhiteTurn);
-            highlightSquares(curXPos, curYPos);
+            ruleBook.highlightSquares(curXPos, curYPos);
 
             oldXPos = curXPos;
             oldYPos = curYPos;
@@ -187,6 +170,7 @@ public class ChessAlgorithm {
         } else if (oldXPos == 0 && oldYPos == 0) {
             ruleBook.setBlRookMoved(true);
         }
+
         if (oldXPos == 7 && oldYPos == 7) {
             ruleBook.setWrRookMoved(true);
         } else if (oldXPos == 7 && oldYPos == 0) {
@@ -217,39 +201,6 @@ public class ChessAlgorithm {
 
     }
 
-    public ArrayList<Integer> highlightSquares(int curXPos, int curYPos) {
-
-        ArrayList<Integer> possibleMoves = ruleBook.getPossibleMoves();
-        ArrayList<Integer> highlightSquares = new ArrayList<>();
-
-        for (int i = 0; i < possibleMoves.size(); i = i + 2) {
-
-            int tempX = curXPos;
-            int tempY = curYPos;
-            int tempPiece = board[possibleMoves.get(i)][possibleMoves.get(i + 1)].getPiece();
-            int tempP2 = board[curXPos][curYPos].getPiece();
-
-            board[possibleMoves.get(i)][possibleMoves.get(i + 1)].setPiece(board[curXPos][curYPos].getPiece());
-            board[curXPos][curYPos].setPiece(0);
-
-            if (!canOpponentCheck()) {
-                board[possibleMoves.get(i)][possibleMoves.get(i + 1)].setHighlighted(true);
-                highlightSquares.add(possibleMoves.get(i));
-                highlightSquares.add(possibleMoves.get(i + 1));
-            }
-
-            curXPos = tempX;
-            curYPos = tempY;
-
-            board[possibleMoves.get(i)][possibleMoves.get(i + 1)].setPiece(tempPiece);
-            board[curXPos][curYPos].setPiece(tempP2);
-
-        }
-
-        return highlightSquares;
-
-    }
-
     public void unhighlightSquares() {
 
         for (int i = 0; i < board.length; i++) {
@@ -257,50 +208,6 @@ public class ChessAlgorithm {
                 board[i][j].setHighlighted(false);
             }
         }
-
-    }
-
-    public boolean canOpponentCheck() {
-
-        for (int curX = 0; curX < board.length; curX++) {
-            for (int curY = 0; curY < board[0].length; curY++) {
-
-                if (isNotCurrPlayersPiece(curX, curY)) {
-
-                    isWhiteTurn = !isWhiteTurn;
-                    if (checkChecker(curX, curY)) {
-
-                        isWhiteTurn = !isWhiteTurn;
-                        return true;
-
-                    }
-                    isWhiteTurn = !isWhiteTurn;
-
-                }
-            }
-        }
-
-        return false;
-
-    }
-
-    public boolean checkChecker(int x, int y) {
-
-        int enemyKing = (isWhiteTurn) ? 12 : 6;
-
-        ruleBook.setBoard(board);
-        ruleBook.findMoves(x, y, isWhiteTurn);
-        ArrayList<Integer> possibleMoves = ruleBook.getPossibleMoves();
-
-        for (int i = 0; i < possibleMoves.size(); i = i + 2) {
-            if (board[possibleMoves.get(i)][possibleMoves.get(i + 1)].getPiece() == enemyKing) {
-
-                return true;
-
-            }
-        }
-
-        return false;
 
     }
 

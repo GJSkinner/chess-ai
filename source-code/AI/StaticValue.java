@@ -3,58 +3,71 @@ import java.util.ArrayList;
 public class StaticValue {
 
     RuleBook ruleBook = new RuleBook();
-    boolean isWhiteTurn;
 
-    int totalPieceValue;
-    int squaresControlled;
-    int staticValue;
+    private boolean isWhiteTurn;
+    private int whiteValue;
+    private int blackValue;
+    private int staticValue;
 
-    public void computeStaticValue(int white, Square[][] board) {
+    public void computeStaticValue(Square[][] board) {
 
-        isWhiteTurn = white == 1;
-        totalPieceValue = 0;
-        squaresControlled = 0;
-        staticValue = 0;
+        int squaresControlled = 0;
+        int totalPieceValue = 0;
 
         for (int x = 0; x < board.length; x++) {
             for (int y = 0; y < board[0].length; y++) {
 
-                if (board[x][y].getIsWhite() == white) {
+                if (isCurrPlayersPiece(board, x, y)) {
 
-                    getPieceValue(board, x, y);
-                    getSquaresControlled(x, y);
+                    totalPieceValue += getPieceValue(board, x, y);
+                    squaresControlled += getSquaresControlled(board, x, y);
 
                 }
 
             }
         }
 
-        staticValue = (int) ((totalPieceValue * 0.6) + (squaresControlled * 0.4));
+        System.out.println(totalPieceValue);
+
+        if (isWhiteTurn) whiteValue = (int) ((totalPieceValue * 0.8) + (squaresControlled * 0.2));
+        else blackValue = (int) ((totalPieceValue * 0.8) + (squaresControlled * 0.2));
+
+        staticValue = whiteValue - blackValue;
 
     }
 
-    public void getSquaresControlled(int x, int y) {
+    public boolean isCurrPlayersPiece(Square[][] board, int curXPos, int curYPos) {
 
-        ArrayList<Integer> possibleMoves;
+        int currPieces = isWhiteTurn ? 6 : 12;
+        return board[curXPos][curYPos].getPiece() <= currPieces && board[curXPos][curYPos].getPiece() > currPieces - 6;
+
+    }
+
+    public int getSquaresControlled(Square[][] board, int x, int y) {
+
+        ruleBook.setBoard(board);
         ruleBook.findMoves(x, y, isWhiteTurn);
-        possibleMoves = ruleBook.getPossibleMoves();
-        squaresControlled = squaresControlled + (possibleMoves.size() / 2);
-        possibleMoves.clear();
+        ArrayList<Integer> possibleMoves = ruleBook.getPossibleMoves();
+        return (possibleMoves.size() / 2);
 
     }
 
-    public void getPieceValue(Square[][] board, int x, int y) {
+    public int getPieceValue(Square[][] board, int x, int y) {
 
-        switch (board[x][y].getPiece()) {
-            case 1 -> totalPieceValue = totalPieceValue + 1;
-            case 2, 3 -> totalPieceValue = totalPieceValue + 3;
-            case 4 -> totalPieceValue = totalPieceValue + 5;
-            case 5 -> totalPieceValue = totalPieceValue + 9;
-        }
+        return switch (board[x][y].getPiece()) {
+            case 1, 7 -> 1;
+            case 2, 3, 8, 9 -> 3;
+            case 4, 10 -> 5;
+            case 5, 11 -> 9;
+            default -> 0;
+        };
 
     }
 
     public int getStaticValue() {
         return staticValue;
     }
+
+    public void setWhiteTurn(boolean whiteTurn) {isWhiteTurn = whiteTurn;}
+
 }

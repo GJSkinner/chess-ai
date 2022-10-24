@@ -1,11 +1,9 @@
 import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class MoveGenerator {
 
-    RuleBook ruleBook = new RuleBook();
-
+    private RuleBook ruleBook;
     public Square[][] board;
 
     public int oldXPos;
@@ -13,18 +11,19 @@ public class MoveGenerator {
     public int curXPos;
     public int curYPos;
 
-    public void selectRandomPiece(Square[][] board) {
+    public void selectRandomPiece(RuleBook ruleBook, Square[][] board) {
 
+        this.ruleBook = ruleBook;
         this.board = board;
 
-        List<List<Integer>> pieces = new ArrayList<>();
+        ArrayList<ArrayList<Integer>> pieces = new ArrayList<>();
 
         for (int x = 0; x < board.length; x++) {       // sets all squares on board to zero
             for (int y = 0; y < board[0].length; y++) {
 
-                if (board[x][y].getIsWhite() == 0) {
+                if (board[x][y].getPiece() > 6) {
 
-                    List<Integer> piece = new ArrayList<>();
+                    ArrayList<Integer> piece = new ArrayList<>();
                     piece.add(x);
                     piece.add(y);
                     pieces.add(piece);
@@ -41,22 +40,23 @@ public class MoveGenerator {
 
     public void selectRandomMove(int x, int y) {
 
-        ArrayList<Integer> possibleMoves;
-
+        ruleBook.setBoard(board);
         ruleBook.findMoves(x, y, false);
-        possibleMoves = ruleBook.getPossibleMoves();
+        ArrayList<Integer> highlights = ruleBook.highlightSquares(x, y);
 
-        if (possibleMoves.size() == 0) selectRandomPiece(board);
-        else {
+        if (highlights.size() > 0) {
 
-            int randomNum = ThreadLocalRandom.current().nextInt(0, possibleMoves.size());
+            int randomNum = ThreadLocalRandom.current().nextInt(0, highlights.size());
             if (randomNum % 2 != 0) randomNum--;
 
             oldXPos = x;
             oldYPos = y;
-            curXPos = possibleMoves.get(randomNum);
-            curYPos = possibleMoves.get(randomNum + 1);
+            curXPos = highlights.get(randomNum);
+            curYPos = highlights.get(randomNum + 1);
 
+        } else {
+
+            selectRandomPiece(ruleBook, board);
         }
 
     }

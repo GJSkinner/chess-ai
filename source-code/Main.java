@@ -5,8 +5,6 @@ public class Main {
 
     public static void main(String[] args) {
 
-        //ChessAlgorithm chessAlgorithm = new ChessAlgorithm();
-
         GUI gui = new GUI();
 
         JFrame jFrame = new JFrame();

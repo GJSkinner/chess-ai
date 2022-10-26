@@ -5,11 +5,20 @@ public class StaticValue {
     RuleBook ruleBook = new RuleBook();
 
     private boolean isWhiteTurn;
-    private int whiteValue;
-    private int blackValue;
     private int staticValue;
 
-    public void computeStaticValue(Square[][] board) {
+    public void master(Square[][] board) {
+
+        isWhiteTurn = false;
+        int blackValue = computeStaticValue(board);
+        isWhiteTurn = true;
+        int whiteValue = computeStaticValue(board);
+
+        staticValue = blackValue - whiteValue;
+
+    }
+
+    public int computeStaticValue(Square[][] board) {
 
         int squaresControlled = 0;
         int totalPieceValue = 0;
@@ -27,12 +36,7 @@ public class StaticValue {
             }
         }
 
-        System.out.println(totalPieceValue);
-
-        if (isWhiteTurn) whiteValue = (int) ((totalPieceValue * 0.8) + (squaresControlled * 0.2));
-        else blackValue = (int) ((totalPieceValue * 0.8) + (squaresControlled * 0.2));
-
-        staticValue = whiteValue - blackValue;
+        return (int) ((totalPieceValue * 0.8) + (squaresControlled * 0.2));
 
     }
 
@@ -67,7 +71,5 @@ public class StaticValue {
     public int getStaticValue() {
         return staticValue;
     }
-
-    public void setWhiteTurn(boolean whiteTurn) {isWhiteTurn = whiteTurn;}
 
 }

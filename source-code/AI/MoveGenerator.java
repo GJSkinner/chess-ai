@@ -11,6 +11,31 @@ public class MoveGenerator {
     public int curXPos;
     public int curYPos;
 
+    public void testTree(RuleBook ruleBook, Square[][] board) {
+
+        Tree tree = new Tree();
+        tree.setRuleBook(ruleBook);
+        tree.setBoard(board);
+        tree.constructTree();
+
+        ArrayList<Node> nodes = tree.getNodes();
+        if (nodes.size() == 1) System.out.println("CHECKMATE");
+
+        Node bestNode = nodes.get(1);
+
+        for (int i = 2; i < nodes.size(); i++) {
+
+            if (nodes.get(i).getStaticValue() > bestNode.getStaticValue()) bestNode = nodes.get(i);
+
+        }
+
+        oldXPos = bestNode.getMove()[0];
+        oldYPos = bestNode.getMove()[1];
+        curXPos = bestNode.getMove()[2];
+        curYPos = bestNode.getMove()[3];
+
+    }
+
     public void selectRandomPiece(RuleBook ruleBook, Square[][] board) {
 
         this.ruleBook = ruleBook;

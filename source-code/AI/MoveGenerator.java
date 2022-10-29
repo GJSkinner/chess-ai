@@ -4,39 +4,23 @@ import java.util.concurrent.ThreadLocalRandom;
 public class MoveGenerator {
 
     private RuleBook ruleBook;
-    public Square[][] board;
+    public int[][] board;
 
     public int oldXPos;
     public int oldYPos;
     public int curXPos;
     public int curYPos;
 
-    public void testTree(RuleBook ruleBook, Square[][] board) {
+    public int[][] minimaxTest(RuleBook ruleBook, int[][] board) {
 
         Tree tree = new Tree();
         tree.setRuleBook(ruleBook);
-        tree.setBoard(board);
-        tree.constructTree();
-
-        ArrayList<Node> nodes = tree.getNodes();
-        if (nodes.size() == 1) System.out.println("CHECKMATE");
-
-        Node bestNode = nodes.get(1);
-
-        for (int i = 2; i < nodes.size(); i++) {
-
-            if (nodes.get(i).getStaticValue() > bestNode.getStaticValue()) bestNode = nodes.get(i);
-
-        }
-
-        oldXPos = bestNode.getMove()[0];
-        oldYPos = bestNode.getMove()[1];
-        curXPos = bestNode.getMove()[2];
-        curYPos = bestNode.getMove()[3];
+        tree.minimax(board, 3, -1000, 1000, false);
+        return tree.getBestBoard();
 
     }
 
-    public void selectRandomPiece(RuleBook ruleBook, Square[][] board) {
+    public void selectRandomPiece(RuleBook ruleBook, int[][] board) {
 
         this.ruleBook = ruleBook;
         this.board = board;
@@ -46,7 +30,7 @@ public class MoveGenerator {
         for (int x = 0; x < board.length; x++) {       // sets all squares on board to zero
             for (int y = 0; y < board[0].length; y++) {
 
-                if (board[x][y].getPiece() > 6) {
+                if (board[x][y] > 6) {
 
                     ArrayList<Integer> piece = new ArrayList<>();
                     piece.add(x);

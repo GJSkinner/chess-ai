@@ -2,7 +2,14 @@ import java.awt.event.MouseEvent;
 
 public class MouseListener implements java.awt.event.MouseListener {
 
+    GUI gui;
     ChessAlgorithm chessAlgorithm = new ChessAlgorithm();
+
+    MouseListener(GUI gui) {
+
+        this.gui = gui;
+
+    }
 
     @Override
     public void mouseClicked(MouseEvent e) {
@@ -30,6 +37,8 @@ public class MouseListener implements java.awt.event.MouseListener {
 
         chessAlgorithm.setCurXPos(xPos);
         chessAlgorithm.setCurYPos(yPos);
+        gui.setSelectedX(xPos);
+        gui.setSelectedY(yPos);
 
         chessAlgorithm.selectSquare();
 

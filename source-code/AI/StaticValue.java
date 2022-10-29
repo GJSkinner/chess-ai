@@ -4,21 +4,16 @@ public class StaticValue {
 
     RuleBook ruleBook = new RuleBook();
 
-    private boolean isWhiteTurn;
-    private int staticValue;
+    public int getStaticValue(int[][] board) {
 
-    public void master(Square[][] board) {
+        int blackValue = computeStaticValue(board, false);
+        int whiteValue = computeStaticValue(board, true);
 
-        isWhiteTurn = false;
-        int blackValue = computeStaticValue(board);
-        isWhiteTurn = true;
-        int whiteValue = computeStaticValue(board);
-
-        staticValue = blackValue - whiteValue;
+        return whiteValue - blackValue;
 
     }
 
-    public int computeStaticValue(Square[][] board) {
+    public int computeStaticValue(int[][] board, boolean isWhiteTurn) {
 
         int squaresControlled = 0;
         int totalPieceValue = 0;
@@ -26,10 +21,10 @@ public class StaticValue {
         for (int x = 0; x < board.length; x++) {
             for (int y = 0; y < board[0].length; y++) {
 
-                if (isCurrPlayersPiece(board, x, y)) {
+                if (isCurrPlayersPiece(board, isWhiteTurn, x, y)) {
 
                     totalPieceValue += getPieceValue(board, x, y);
-                    squaresControlled += getSquaresControlled(board, x, y);
+                    squaresControlled += getSquaresControlled(board, isWhiteTurn, x, y);
 
                 }
 
@@ -40,14 +35,14 @@ public class StaticValue {
 
     }
 
-    public boolean isCurrPlayersPiece(Square[][] board, int curXPos, int curYPos) {
+    public boolean isCurrPlayersPiece(int[][] board, boolean isWhiteTurn, int curXPos, int curYPos) {
 
         int currPieces = isWhiteTurn ? 6 : 12;
-        return board[curXPos][curYPos].getPiece() <= currPieces && board[curXPos][curYPos].getPiece() > currPieces - 6;
+        return board[curXPos][curYPos] <= currPieces && board[curXPos][curYPos] > currPieces - 6;
 
     }
 
-    public int getSquaresControlled(Square[][] board, int x, int y) {
+    public int getSquaresControlled(int[][] board, boolean isWhiteTurn, int x, int y) {
 
         ruleBook.setBoard(board);
         ruleBook.findMoves(x, y, isWhiteTurn);
@@ -56,9 +51,9 @@ public class StaticValue {
 
     }
 
-    public int getPieceValue(Square[][] board, int x, int y) {
+    public int getPieceValue(int[][] board, int x, int y) {
 
-        return switch (board[x][y].getPiece()) {
+        return switch (board[x][y]) {
             case 1, 7 -> 1;
             case 2, 3, 8, 9 -> 3;
             case 4, 10 -> 5;
@@ -66,10 +61,6 @@ public class StaticValue {
             default -> 0;
         };
 
-    }
-
-    public int getStaticValue() {
-        return staticValue;
     }
 
 }

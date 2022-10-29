@@ -9,7 +9,7 @@ public class Main {
 
         JFrame jFrame = new JFrame();
 
-        MouseListener mouseListener = new MouseListener();
+        MouseListener mouseListener = new MouseListener(gui);
 
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         jFrame.setTitle("Chess");

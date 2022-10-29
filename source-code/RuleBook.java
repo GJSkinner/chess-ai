@@ -11,7 +11,7 @@ public class RuleBook {
 
     private boolean whiteTurn;
 
-    private Square[][] board;
+    private int[][] board;
     private ArrayList<Integer> possibleMoves;
 
     public void findMoves(int x, int y, boolean isWhiteTurn) {
@@ -19,18 +19,18 @@ public class RuleBook {
         whiteTurn = isWhiteTurn;
         possibleMoves = new ArrayList<>();
 
-        if (board[x][y].getPiece() == 1 || board[x][y].getPiece() == 7) {
+        if (board[x][y] == 1 || board[x][y] == 7) {
             findPawnMoves(x, y);
-        } else if (board[x][y].getPiece() == 2 || board[x][y].getPiece() == 8) {
+        } else if (board[x][y] == 2 || board[x][y] == 8) {
             findKnightMoves(x, y);
-        } else if (board[x][y].getPiece() == 3 || board[x][y].getPiece() == 9) {
+        } else if (board[x][y] == 3 || board[x][y] == 9) {
             findBishopMoves(x, y);
-        } else if (board[x][y].getPiece() == 4 || board[x][y].getPiece() == 10) {
+        } else if (board[x][y] == 4 || board[x][y] == 10) {
             findRookMoves(x, y);
-        } else if (board[x][y].getPiece() == 5 || board[x][y].getPiece() == 11) {
+        } else if (board[x][y] == 5 || board[x][y] == 11) {
             findBishopMoves(x, y);
             findRookMoves(x, y);
-        } else if (board[x][y].getPiece() == 6 || board[x][y].getPiece() == 12) {
+        } else if (board[x][y] == 6 || board[x][y] == 12) {
             findKingMoves(x, y);
         }
 
@@ -45,14 +45,13 @@ public class RuleBook {
 
             int tempX = curXPos;
             int tempY = curYPos;
-            int tempPiece = board[possibleMoves.get(i)][possibleMoves.get(i + 1)].getPiece();
-            int tempP2 = board[curXPos][curYPos].getPiece();
+            int tempPiece = board[possibleMoves.get(i)][possibleMoves.get(i + 1)];
+            int tempP2 = board[curXPos][curYPos];
 
-            board[possibleMoves.get(i)][possibleMoves.get(i + 1)].setPiece(board[curXPos][curYPos].getPiece());
-            board[curXPos][curYPos].setPiece(0);
+            board[possibleMoves.get(i)][possibleMoves.get(i + 1)] = board[curXPos][curYPos];
+            board[curXPos][curYPos] = 0;
 
             if (!canOpponentCheck()) {
-                board[possibleMoves.get(i)][possibleMoves.get(i + 1)].setHighlighted(true);
                 highlightSquares.add(possibleMoves.get(i));
                 highlightSquares.add(possibleMoves.get(i + 1));
             }
@@ -60,8 +59,8 @@ public class RuleBook {
             curXPos = tempX;
             curYPos = tempY;
 
-            board[possibleMoves.get(i)][possibleMoves.get(i + 1)].setPiece(tempPiece);
-            board[curXPos][curYPos].setPiece(tempP2);
+            board[possibleMoves.get(i)][possibleMoves.get(i + 1)] = tempPiece;
+            board[curXPos][curYPos] = tempP2;
 
         }
 
@@ -97,11 +96,10 @@ public class RuleBook {
 
         int enemyKing = (whiteTurn) ? 12 : 6;
         findMoves(x, y, whiteTurn);
-        ArrayList<Integer> possibleMoves = this.possibleMoves;
 
         for (int i = 0; i < possibleMoves.size(); i = i + 2) {
 
-            if (board[possibleMoves.get(i)][possibleMoves.get(i + 1)].getPiece() == enemyKing) return true;
+            if (board[possibleMoves.get(i)][possibleMoves.get(i + 1)] == enemyKing) return true;
 
         }
 
@@ -112,7 +110,7 @@ public class RuleBook {
     public boolean isNotCurrPlayersPiece(int curXPos, int curYPos) {
 
         int currPieces = whiteTurn ? 6 : 12;
-        return board[curXPos][curYPos].getPiece() > currPieces || board[curXPos][curYPos].getPiece() <= currPieces - 6;
+        return board[curXPos][curYPos] > currPieces || board[curXPos][curYPos] <= currPieces - 6;
 
     }
 
@@ -136,19 +134,19 @@ public class RuleBook {
 
     public void findPawnMoves(int x, int y) {
 
-        if (board[x][calculator(y, 1, true)].getPiece() == 0) {
+        if (board[x][calculator(y, 1, true)] == 0) {
             possibleMoves.add(x); // move 1 forwards
             possibleMoves.add(calculator(y, 1, true));
         }
         if (whiteTurn && y == 6 || !whiteTurn && y == 1) {
-            if (board[x][calculator(y, 2, true)].getPiece() == 0 && board[x][calculator(y, 1, true)].getPiece() == 0) {
+            if (board[x][calculator(y, 2, true)] == 0 && board[x][calculator(y, 1, true)] == 0) {
                 possibleMoves.add(x); // move 2 forwards
                 possibleMoves.add(calculator(y, 2, true));
             }
         }
         if (whiteTurn && x < 7 || !whiteTurn && x > 0) {
             if (isNotCurrPlayersPiece(calculator(x, 1, false), calculator(y, 1, true))) {
-                if (board[calculator(x, 1, false)][calculator(y, 1, true)].getPiece() > 0) {
+                if (board[calculator(x, 1, false)][calculator(y, 1, true)] > 0) {
                     possibleMoves.add(calculator(x, 1, false)); // take on right
                     possibleMoves.add(calculator(y, 1, true));
                 }
@@ -156,20 +154,20 @@ public class RuleBook {
         }
         if (whiteTurn && x > 0 || !whiteTurn && x < 7) {
             if (isNotCurrPlayersPiece(calculator(x, 1, true), calculator(y, 1, true))) {
-                if (board[calculator(x, 1, true)][calculator(y, 1, true)].getPiece() > 0) {
+                if (board[calculator(x, 1, true)][calculator(y, 1, true)] > 0) {
                     possibleMoves.add(calculator(x, 1, true)); // take on left
                     possibleMoves.add(calculator(y, 1, true));
                 }
             }
         }
         if (whiteTurn && x < 7 || !whiteTurn && x > 0) {
-            if (board[calculator(x, 1, false)][y].getPassable() && isNotCurrPlayersPiece(calculator(x, 1, false), y)) {
+            if (board[calculator(x, 1, false)][y] > 12 && isNotCurrPlayersPiece(calculator(x, 1, false), y)) {
                 possibleMoves.add(calculator(x, 1, false));
                 possibleMoves.add(calculator(y, 1, true));
             }
         }
         if (whiteTurn && x > 0 || !whiteTurn && x < 7) {
-            if (board[calculator(x, 1, true)][y].getPassable() && isNotCurrPlayersPiece(calculator(x, 1, true), y)) {
+            if (board[calculator(x, 1, true)][y] > 12 && isNotCurrPlayersPiece(calculator(x, 1, true), y)) {
                 possibleMoves.add(calculator(x, 1, true));
                 possibleMoves.add(calculator(y, 1, true));
             }
@@ -203,7 +201,7 @@ public class RuleBook {
     public void findRookMoves(int x, int y) {
 
         for (int i = 1; i < y + 1; i++) {  // up
-            if (board[x][y - i].getPiece() == 0) {
+            if (board[x][y - i] == 0) {
                 possibleMoves.add(x);
                 possibleMoves.add(y - i);
             } else if (isNotCurrPlayersPiece(x, y - i)) {
@@ -215,7 +213,7 @@ public class RuleBook {
             }
         }
         for (int i = 1; i < board[0].length - y; i++) {   // down
-            if (board[x][y + i].getPiece() == 0) {
+            if (board[x][y + i] == 0) {
                 possibleMoves.add(x);
                 possibleMoves.add(y + i);
             } else if (isNotCurrPlayersPiece(x, y + i)) {
@@ -227,7 +225,7 @@ public class RuleBook {
             }
         }
         for (int i = 1; i < board.length - x; i++) {   // right
-            if (board[x + i][y].getPiece() == 0) {
+            if (board[x + i][y] == 0) {
                 possibleMoves.add(x + i);
                 possibleMoves.add(y);
             } else if (isNotCurrPlayersPiece(x + i, y)) {
@@ -239,7 +237,7 @@ public class RuleBook {
             }
         }
         for (int i = 1; i < x + 1; i++) {   //left
-            if (board[x - i][y].getPiece() == 0) {
+            if (board[x - i][y] == 0) {
                 possibleMoves.add(x - i);
                 possibleMoves.add(y);
             } else if (isNotCurrPlayersPiece(x - i, y)) {
@@ -267,7 +265,7 @@ public class RuleBook {
 
         if (y < (x + 1)) {
             for (int i = 1; i < y + 1; i++) {   // up/left
-                if (board[x - i][y - i].getPiece() == 0) {
+                if (board[x - i][y - i] == 0) {
                     possibleMoves.add(x - i);
                     possibleMoves.add(y - i);
                 } else if (isNotCurrPlayersPiece(x - i, y - i)) {
@@ -280,7 +278,7 @@ public class RuleBook {
             }
         } else {
             for (int i = 1; i < x + 1; i++) {
-                if (board[x - i][y - i].getPiece() == 0) {
+                if (board[x - i][y - i] == 0) {
                     possibleMoves.add(x - i);
                     possibleMoves.add(y - i);
                 } else if (isNotCurrPlayersPiece(x - i, y - i)) {
@@ -317,7 +315,7 @@ public class RuleBook {
 
     public boolean diagonalDownLeft(int x, int y, int i) {
 
-        if (board[x - i][y + i].getPiece() == 0) {
+        if (board[x - i][y + i] == 0) {
             possibleMoves.add(x - i);
             possibleMoves.add(y + i);
         } else if (isNotCurrPlayersPiece(x - i, y + i)) {
@@ -333,7 +331,7 @@ public class RuleBook {
 
     public boolean diagonalUpRight(int x, int y, int i) {
 
-        if (board[x + i][y - i].getPiece() == 0) {
+        if (board[x + i][y - i] == 0) {
             possibleMoves.add(x + i);
             possibleMoves.add(y - i);
         } else if (isNotCurrPlayersPiece(x + i, y - i)) {
@@ -349,7 +347,7 @@ public class RuleBook {
 
     public boolean diagonalDownRight(int x, int y, int i) {
 
-        if (board[x + i][y + i].getPiece() == 0) {
+        if (board[x + i][y + i] == 0) {
             possibleMoves.add(x + i);
             possibleMoves.add(y + i);
         } else if (isNotCurrPlayersPiece(x + i, y + i)) {
@@ -381,13 +379,13 @@ public class RuleBook {
         if (whiteTurn) {
             if (!wkingMoved) {
                 if (!wlRookMoved) {
-                    if (board[1][7].getPiece() == 0 && board[2][7].getPiece() == 0 && board[3][7].getPiece() == 0) {
+                    if (board[1][7] == 0 && board[2][7] == 0 && board[3][7] == 0) {
                         possibleMoves.add(x - 2);
                         possibleMoves.add(y);
                     }
                 }
                 if (!wrRookMoved) {
-                    if (board[5][7].getPiece() == 0 && board[6][7].getPiece() == 0) {
+                    if (board[5][7] == 0 && board[6][7] == 0) {
                         possibleMoves.add(x + 2);
                         possibleMoves.add(y);
                     }
@@ -398,13 +396,13 @@ public class RuleBook {
         if (!whiteTurn) {
             if (!bkingMoved) {
                 if (!blRookMoved) {
-                    if (board[1][0].getPiece() == 0 && board[2][0].getPiece() == 0 && board[3][0].getPiece() == 0) {
+                    if (board[1][0] == 0 && board[2][0] == 0 && board[3][0] == 0) {
                         possibleMoves.add(x - 2);
                         possibleMoves.add(y);
                     }
                 }
                 if (!brRookMoved) {
-                    if (board[5][0].getPiece() == 0 && board[6][0].getPiece() == 0) {
+                    if (board[5][0] == 0 && board[6][0] == 0) {
                         possibleMoves.add(x + 2);
                         possibleMoves.add(y);
                     }
@@ -420,7 +418,7 @@ public class RuleBook {
     public void setWkingMoved(boolean wkingMoved) {this.wkingMoved = wkingMoved;}
     public void setWlRookMoved(boolean wlRookMoved) {this.wlRookMoved = wlRookMoved;}
     public void setWrRookMoved(boolean wrRookMoved) {this.wrRookMoved = wrRookMoved;}
-    public void setBoard(Square[][] board) {this.board = board;}
+    public void setBoard(int[][] board) {this.board = board;}
 
     public ArrayList<Integer> getPossibleMoves() {return possibleMoves;}
 

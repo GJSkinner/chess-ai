@@ -112,12 +112,12 @@ public class ChessAlgorithm {
         board[oldXPos][oldYPos] = 0;
 
         if (board[curXPos][curYPos] == 4 || board[curXPos][curYPos] == 10) rookMoved();  // handles castling stuff
-        if (board[curXPos][curYPos] == 6 || board[curXPos][curYPos] == 12) castling();
-        if (board[curXPos][curYPos] == 1 || board[curXPos][curYPos] == 7) pawnFeatures(); // handles special pawn cases
+        if (board[curXPos][curYPos] == 6 || board[curXPos][curYPos] == 12) castleMoved();
+        if (board[curXPos][curYPos] == 1 || board[curXPos][curYPos] == 7) pawnMoved(); // handles special pawn cases
 
     }
 
-    public void pawnFeatures() {
+    public void pawnMoved() {
 
         if (isWhiteTurn && curYPos == 0) {  // promotion to queen
             board[curXPos][curYPos] = 5;
@@ -144,23 +144,28 @@ public class ChessAlgorithm {
     public void rookMoved() {
 
         if (oldXPos == 0 && oldYPos == 7) {
-            ruleBook.setWlRookMoved(true);
+            ruleBook.setWCanCastleL(false);
         } else if (oldXPos == 0 && oldYPos == 0) {
-            ruleBook.setBlRookMoved(true);
+            ruleBook.setBCanCastleL(false);
         }
 
         if (oldXPos == 7 && oldYPos == 7) {
-            ruleBook.setWrRookMoved(true);
+            ruleBook.setWCanCastleR(false);
         } else if (oldXPos == 7 && oldYPos == 0) {
-            ruleBook.setBrRookMoved(true);
+            ruleBook.setBCanCastleR(false);
         }
 
     }
 
-    public void castling() {
+    public void castleMoved() {
 
-        if (isWhiteTurn) ruleBook.setWkingMoved(true);
-        else ruleBook.setBkingMoved(true);
+        if (isWhiteTurn) {
+            ruleBook.setWCanCastleR(false);
+            ruleBook.setWCanCastleL(false);
+        } else {
+            ruleBook.setBCanCastleR(false);
+            ruleBook.setBCanCastleL(false);
+        }
 
         int y = (isWhiteTurn) ? 7 : 0;
         int rook = (isWhiteTurn) ? 4 : 10;
